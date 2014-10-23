@@ -1,6 +1,6 @@
 #To generate AAR library
 ######Import Gradle project to IDE
-######Run gradle task: assemble
+######Run gradle task: assemble on project: aware:awareframework
 ######Project aar will be generated in {project_root}\awareframework\build\outputs\aar
 #To generate APK
 ######Import Gradle project to IDE
