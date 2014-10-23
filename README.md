@@ -7,4 +7,4 @@
 ######Edit "apply plugin: 'com.android.library'" in {project_root}\awareframework\build.gradle to "apply plugin: 'com.android.application'"
 ######Run gradle task: assemble
 ######Project apk will be generated in {project_root}\awareframework\build\outputs\apk
-####You can get generated AwareFramework aar from my other project: aware_plugins
+####You can get generated AwareFramework aar from my other project: https://github.com/bambalooon/aware_plugins
