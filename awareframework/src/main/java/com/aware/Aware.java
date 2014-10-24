@@ -175,6 +175,8 @@ public class Aware extends Service {
     private static Intent temperatureSrv = null;
     private static Intent esmSrv = null;
     private static Intent installationsSrv = null;
+
+    private static int webserviceUpdateFrequency = 0;
     
     /**
      * Singleton instance of the framework
@@ -217,9 +219,9 @@ public class Aware extends Service {
         DEBUG = Aware.getSetting(awareContext.getContentResolver(),Aware_Preferences.DEBUG_FLAG).equals("true");
         TAG = Aware.getSetting(awareContext.getContentResolver(),Aware_Preferences.DEBUG_TAG).length()>0?Aware.getSetting(awareContext.getContentResolver(),Aware_Preferences.DEBUG_TAG):TAG;
         
-        awareStatusMonitor = new Intent(getApplicationContext(), Aware.class);
-        repeatingIntent = PendingIntent.getService(getApplicationContext(), 0,  awareStatusMonitor, 0);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000, STATUS_MONITOR_INTERVAL * 1000, repeatingIntent);
+//        awareStatusMonitor = new Intent(getApplicationContext(), Aware.class);
+//        repeatingIntent = PendingIntent.getService(getApplicationContext(), 0,  awareStatusMonitor, 0);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000, STATUS_MONITOR_INTERVAL * 1000, repeatingIntent);
         
         Intent synchronise = new Intent(Aware.ACTION_AWARE_WEBSERVICE);
         webserviceUploadIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, synchronise, 0);
@@ -244,7 +246,22 @@ public class Aware extends Service {
         }
         
         get_device_info();
-        new AsyncPing().execute();
+
+        int frequency_webservice = Integer.parseInt(Aware.getSetting(awareContext.getContentResolver(), Aware_Preferences.FREQUENCY_WEBSERVICE));
+        if( frequency_webservice == 0 ) {
+            if(DEBUG) {
+                Log.d(TAG,"Data sync is disabled.");
+            }
+            alarmManager.cancel(webserviceUploadIntent);
+        }
+        if( Aware.getSetting(awareContext.getContentResolver(), Aware_Preferences.STATUS_WEBSERVICE).equals("true") && frequency_webservice > 0 ) {
+            webserviceUpdateFrequency = frequency_webservice;
+            if( DEBUG ) {
+                Log.d(TAG,"Data sync every " + frequency_webservice + " minute(s)");
+            }
+            alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis() + 1000, frequency_webservice * 60 * 1000, webserviceUploadIntent);
+        }
+//        new AsyncPing().execute();
         
         if( Aware.DEBUG ) Log.d(TAG,"AWARE framework is created!");
     }
@@ -339,20 +356,6 @@ public class Aware extends Service {
             if( Aware.getSetting(getContentResolver(), Aware_Preferences.AWARE_AUTO_UPDATE).equals("true") ) {
             	new Update_Check().execute();
             }
-            
-            int frequency_webservice = Integer.parseInt(Aware.getSetting(getContentResolver(), Aware_Preferences.FREQUENCY_WEBSERVICE));
-            if( frequency_webservice == 0 ) {
-                if(DEBUG) {
-                    Log.d(TAG,"Data sync is disabled.");
-                }
-                alarmManager.cancel(webserviceUploadIntent);
-            }
-            if( Aware.getSetting(getContentResolver(), Aware_Preferences.STATUS_WEBSERVICE).equals("true") && frequency_webservice > 0 ) {
-                if( DEBUG ) {
-                    Log.d(TAG,"Data sync every " + frequency_webservice + " minute(s)");
-                }
-                alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis() + 1000, frequency_webservice * 60 * 1000, webserviceUploadIntent);
-            }
         } else {
             Intent startFramework = new Intent(this, BackgroundService.class);
             startFramework.setAction(ACTION_AWARE_STOP_PLUGINS);
@@ -369,7 +372,7 @@ public class Aware extends Service {
     public void onDestroy() {
         super.onDestroy();
         
-        alarmManager.cancel(repeatingIntent);
+//        alarmManager.cancel(repeatingIntent);
         alarmManager.cancel(webserviceUploadIntent);
         
         awareContext.unregisterReceiver(aware_BR);
@@ -477,6 +480,20 @@ public class Aware extends Service {
             }
             
             if( intent.getAction().equals(Aware.ACTION_AWARE_REFRESH)) {
+                int frequency_webservice = Integer.parseInt(Aware.getSetting(context.getContentResolver(), Aware_Preferences.FREQUENCY_WEBSERVICE));
+                if( frequency_webservice == 0 ) {
+                    if(DEBUG) {
+                        Log.d(TAG,"Data sync is disabled.");
+                    }
+                    alarmManager.cancel(webserviceUploadIntent);
+                }
+                if( Aware.getSetting(context.getContentResolver(), Aware_Preferences.STATUS_WEBSERVICE).equals("true") && frequency_webservice > 0 && frequency_webservice != webserviceUpdateFrequency ) {
+                    webserviceUpdateFrequency = frequency_webservice;
+                    if( DEBUG ) {
+                        Log.d(TAG,"Data sync every " + frequency_webservice + " minute(s)");
+                    }
+                    alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis() + 1000, frequency_webservice * 60 * 1000, webserviceUploadIntent);
+                }
                 Intent refresh = new Intent(context, Aware.class);
                 context.startService(refresh);
             }

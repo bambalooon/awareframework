@@ -144,7 +144,7 @@ public class Plugins_Manager extends Activity {
         mLoader = (ProgressBar) findViewById(R.id.loading_addons);
         mLoader.setIndeterminate(true);
         
-        new PollPackages().execute();
+//        new PollPackages().execute();
     }
     
     /**
@@ -496,14 +496,14 @@ public class Plugins_Manager extends Activity {
     protected void onResume() {
     	super.onResume();
     	
-    	new PollPackages().execute();
+//    	new PollPackages().execute();
     }
     
     @Override
     protected void onStart() {
     	super.onStart();
     	
-    	new PollPackages().execute();
+//    	new PollPackages().execute();
     }
     
     private static int getVersion( String package_name ) {
