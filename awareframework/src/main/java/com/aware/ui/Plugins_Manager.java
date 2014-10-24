@@ -495,7 +495,8 @@ public class Plugins_Manager extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	
+        update_UI();
+        mLoader.setVisibility(View.GONE);
 //    	new PollPackages().execute();
     }
     
