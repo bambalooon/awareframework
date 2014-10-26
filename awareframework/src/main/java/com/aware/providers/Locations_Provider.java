@@ -112,9 +112,13 @@ public class Locations_Provider extends ContentProvider {
 
 		switch (sUriMatcher.match(uri)) {
 		case LOCATIONS:
-			count = database.delete(DATABASE_TABLES[0], selection,
-					selectionArgs);
-			break;
+            try {
+                count = database.delete(DATABASE_TABLES[0], selection,
+                        selectionArgs);
+            } finally {
+                database.close();
+            }
+            break;
 		default:
 
 			throw new IllegalArgumentException("Unknown URI " + uri);
@@ -150,17 +154,21 @@ public class Locations_Provider extends ContentProvider {
 
 		switch (sUriMatcher.match(uri)) {
 		case LOCATIONS:
-			long location_id = database.insert(DATABASE_TABLES[0],
-					Locations_Data.PROVIDER, values);
+            try {
+                long location_id = database.insert(DATABASE_TABLES[0],
+                        Locations_Data.PROVIDER, values);
 
-			if (location_id > 0) {
-				Uri locationUri = ContentUris.withAppendedId(
-						Locations_Data.CONTENT_URI, location_id);
-				getContext().getContentResolver().notifyChange(locationUri,
-						null);
-				return locationUri;
-			}
-			throw new SQLException("Failed to insert row into " + uri);
+                if (location_id > 0) {
+                    Uri locationUri = ContentUris.withAppendedId(
+                            Locations_Data.CONTENT_URI, location_id);
+                    getContext().getContentResolver().notifyChange(locationUri,
+                            null);
+                    return locationUri;
+                }
+            } finally {
+                database.close();
+            }
+            throw new SQLException("Failed to insert row into " + uri);
 		default:
 
 			throw new IllegalArgumentException("Unknown URI " + uri);
@@ -250,9 +258,13 @@ public class Locations_Provider extends ContentProvider {
 		int count = 0;
 		switch (sUriMatcher.match(uri)) {
 		case LOCATIONS:
-			count = database.update(DATABASE_TABLES[0], values, selection,
-					selectionArgs);
-			break;
+            try {
+                count = database.update(DATABASE_TABLES[0], values, selection,
+                        selectionArgs);
+            } finally {
+                database.close();
+            }
+            break;
 		default:
 
 			throw new IllegalArgumentException("Unknown URI " + uri);

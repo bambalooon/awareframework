@@ -213,6 +213,7 @@ public class Aware extends Service {
         
         awareContext = getApplicationContext();
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Log.d(TAG, "AM: "+alarmManager);
         
         PreferenceManager.setDefaultValues(this, R.xml.aware_preferences, false);
         
@@ -492,6 +493,7 @@ public class Aware extends Service {
                     if( DEBUG ) {
                         Log.d(TAG,"Data sync every " + frequency_webservice + " minute(s)");
                     }
+                    Log.d(TAG, "Refresh: "+alarmManager+":"+webserviceUploadIntent);
                     alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis() + 1000, frequency_webservice * 60 * 1000, webserviceUploadIntent);
                 }
                 Intent refresh = new Intent(context, Aware.class);
