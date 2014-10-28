@@ -112,12 +112,8 @@ public class Locations_Provider extends ContentProvider {
 
 		switch (sUriMatcher.match(uri)) {
 		case LOCATIONS:
-            try {
-                count = database.delete(DATABASE_TABLES[0], selection,
-                        selectionArgs);
-            } finally {
-                database.close();
-            }
+            count = database.delete(DATABASE_TABLES[0], selection,
+                    selectionArgs);
             break;
 		default:
 
@@ -154,19 +150,15 @@ public class Locations_Provider extends ContentProvider {
 
 		switch (sUriMatcher.match(uri)) {
 		case LOCATIONS:
-            try {
-                long location_id = database.insert(DATABASE_TABLES[0],
-                        Locations_Data.PROVIDER, values);
+            long location_id = database.insert(DATABASE_TABLES[0],
+                    Locations_Data.PROVIDER, values);
 
-                if (location_id > 0) {
-                    Uri locationUri = ContentUris.withAppendedId(
-                            Locations_Data.CONTENT_URI, location_id);
-                    getContext().getContentResolver().notifyChange(locationUri,
-                            null);
-                    return locationUri;
-                }
-            } finally {
-                database.close();
+            if (location_id > 0) {
+                Uri locationUri = ContentUris.withAppendedId(
+                        Locations_Data.CONTENT_URI, location_id);
+                getContext().getContentResolver().notifyChange(locationUri,
+                        null);
+                return locationUri;
             }
             throw new SQLException("Failed to insert row into " + uri);
 		default:
@@ -258,12 +250,8 @@ public class Locations_Provider extends ContentProvider {
 		int count = 0;
 		switch (sUriMatcher.match(uri)) {
 		case LOCATIONS:
-            try {
-                count = database.update(DATABASE_TABLES[0], values, selection,
-                        selectionArgs);
-            } finally {
-                database.close();
-            }
+            count = database.update(DATABASE_TABLES[0], values, selection,
+                    selectionArgs);
             break;
 		default:
 
