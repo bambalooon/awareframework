@@ -211,7 +211,7 @@ public class Locations_Provider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 
 		if (database == null || !database.isOpen())
-			database = databaseHelper.getWritableDatabase();
+			database = databaseHelper.getReadableDatabase();
 
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 

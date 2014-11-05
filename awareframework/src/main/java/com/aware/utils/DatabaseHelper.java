@@ -74,7 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     
     @Override
-    public SQLiteDatabase getWritableDatabase() {
+    public synchronized SQLiteDatabase getWritableDatabase() {
     	if( database != null ) {
     		if( ! database.isOpen() ) {
     			database = null;
@@ -110,7 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     
     @Override
-    public SQLiteDatabase getReadableDatabase() {
+    public synchronized SQLiteDatabase getReadableDatabase() {
     	if( database != null ) {
     		if( ! database.isOpen() ) {
     			database = null;
